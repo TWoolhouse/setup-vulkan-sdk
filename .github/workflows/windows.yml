@@ -1,0 +1,26 @@
+name: Main
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Vulkan
+        id: vulkan
+        uses: ./
+        with:
+          version: latest
+
+      - name: Output
+        run: |
+          echo "- Version: ${{ steps.vulkan.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- SDK Path: ${{ steps.vulkan.outputs.path }}" >> $GITHUB_STEP_SUMMARY
