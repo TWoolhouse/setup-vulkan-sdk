@@ -1,4 +1,4 @@
-name: Setup Vulkan SDK
+name: setup-vk-sdk
 description: Setup a specific version of the Vulkan SDK with requested modules
 author: TWoolhouse
 
