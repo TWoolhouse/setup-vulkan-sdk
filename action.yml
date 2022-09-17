@@ -55,9 +55,7 @@ runs:
       run: ./install.sh
       env:
         vk_sdk_dir: ${{ steps.path.outputs.value }}
-        vk_com_list: |
-          com.vulkan
-          com.vulkan.core
+        vk_com_list: com.lunarg.vulkan.debug
       shell: bash
 
     - name: Cache
