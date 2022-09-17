@@ -8,7 +8,9 @@ Windows)
 	./$download_name --root $vk_sdk_dir --accept-licenses --default-answer --confirm-command install $vk_com_list
 	;;
 Linux)
-	exit 1
+	tar xf $download_name
+	. ./$vk_ver/setup-env.sh
+	mv -uf $VULKAN_SDK ./vulkan_sdk
 	;;
 macOS)
 	exit 1

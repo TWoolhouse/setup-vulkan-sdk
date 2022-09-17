@@ -24,7 +24,9 @@ runs:
   steps:
     - name: SDK Path
       id: path
-      run: echo "::set-output name=value::${{ github.workspace }}/vulkan_sdk"
+      run: |
+        echo "VULKAN_SDK=${{ github.workspace }}/vulkan_sdk" >> GITHUB_ENV
+        echo "::set-output name=value::${{ github.workspace }}/vulkan_sdk"
       shell: bash
 
     - name: Resolve Latest Version
@@ -58,6 +60,7 @@ runs:
       id: install
       run: ./install.sh
       env:
+        vk_ver: ${{ steps.version.outputs.value }}
         vk_sdk_dir: ${{ steps.path.outputs.value }}
         vk_com_list: ${{ inputs.components }}
       shell: bash
