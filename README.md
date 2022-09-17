@@ -1,5 +1,6 @@
 # setup-vulkan-sdk
 [![Main](https://github.com/TWoolhouse/setup-vulkan-sdk/actions/workflows/test.yml/badge.svg)](https://github.com/TWoolhouse/setup-vulkan-sdk/actions/workflows/test.yml)
+
 Github Action to setup the Vulkan SDK
 
 Supported Runners:
