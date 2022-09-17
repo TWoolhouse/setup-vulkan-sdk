@@ -7,6 +7,10 @@ inputs:
     description: SDK Version to install
     required: true
     default: latest
+  components:
+    description: Components to include in the SDK
+    required: false
+    default: ""
 outputs:
   version:
     description: SDK Version Installed
@@ -40,7 +44,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ steps.path.outputs.value }}
-        key: ${{ runner.os }}-${{ steps.version.outputs.value }}
+        key: ${{ runner.os }}-${{ steps.version.outputs.value }}-${{ inputs.components }}
 
     - name: Download SDK
       if: steps.hit.outputs.cache-hit != 'true'
@@ -55,12 +59,5 @@ runs:
       run: ./install.sh
       env:
         vk_sdk_dir: ${{ steps.path.outputs.value }}
-        vk_com_list: com.lunarg.vulkan.debug
+        vk_com_list: ${{ inputs.components }}
       shell: bash
-
-    - name: Cache
-      if: steps.hit.outputs.cache-hit != 'true'
-      uses: actions/cache@v3
-      with:
-        path: ${{ steps.path.outputs.value }}
-        key: ${{ runner.os }}-${{ steps.version.outputs.value }}
