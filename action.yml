@@ -2,6 +2,10 @@ name: setup-vk-sdk
 description: Setup a specific version of the Vulkan SDK with requested modules
 author: TWoolhouse
 
+branding:
+  icon: download
+  color: blue
+
 inputs:
   version:
     description: SDK Version to install
