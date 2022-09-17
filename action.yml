@@ -1,0 +1,57 @@
+name: Setup Vulkan SDK
+description: Setup a specific version of the Vulkan SDK with requested modules
+author: TWoolhouse
+
+inputs:
+  version:
+    description: SDK Version to install
+    required: true
+    default: latest
+outputs:
+  version:
+    description: SDK Version Installed
+    value: ${{ runs.env.vk_ver }}
+  path:
+    description: Path to the Vulkan SDK
+    value: ${{ runs.env.vk_sdk_dir }}
+
+runs:
+  using: composite
+  env:
+    vk_ver: ${{ inputs.version }}
+    vk_sdk_dir: ${{ github.workspace }}/vulkan_sdk/
+  steps:
+    - name: Resolve Version
+      id: resolve
+      if: ${{ env.vk_ver }} == "latest"
+      run: resolve.sh
+      shell: bash
+
+    - name: Hit Cache
+      id: hit
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.vk_sdk_dir }}
+        key: ${{ runner.os }}-${{ env.vk_ver }}
+
+    - name: Download SDK
+      if: steps.hit.outputs.cache-hit != 'true'
+      run: download.sh
+      shell: bash
+
+    - name: Install SDK
+      if: steps.hit.outputs.cache-hit != 'true'
+      id: install
+      run: install.sh
+      env:
+        vk_com_list: |
+          com.vulkan
+          com.vulkan.core
+      shell: bash
+
+    - name: Cache
+      if: steps.hit.outputs.cache-hit != 'true'
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.vk_sdk_dir }}
+        key: ${{ runner.os }}-${{ env.vk_ver }}
