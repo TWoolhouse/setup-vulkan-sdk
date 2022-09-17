@@ -20,13 +20,13 @@ runs:
   steps:
     - name: SDK Path
       id: path
-      run: echo "::set-output name=value::vulkan_sdk"
+      run: echo "::set-output name=value::${{ github.workspace }}/vulkan_sdk"
       shell: bash
 
     - name: Resolve Latest Version
       id: resolve
       if: ${{ inputs.version }} == "latest"
-      run: resolve.sh
+      run: ./resolve.sh
       shell: bash
 
     - name: Version
@@ -44,7 +44,7 @@ runs:
 
     - name: Download SDK
       if: steps.hit.outputs.cache-hit != 'true'
-      run: download.sh
+      run: ./download.sh
       env:
         vk_ver: ${{ steps.version.outputs.value }}
       shell: bash
@@ -52,8 +52,9 @@ runs:
     - name: Install SDK
       if: steps.hit.outputs.cache-hit != 'true'
       id: install
-      run: install.sh
+      run: ./install.sh
       env:
+        vk_sdk_dir: ${{ steps.path.outputs.value }}
         vk_com_list: |
           com.vulkan
           com.vulkan.core
@@ -64,4 +65,4 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ steps.path.outputs.value }}
-        key: ${{ runner.os }}-${{ env.vk_ver }}
+        key: ${{ runner.os }}-${{ steps.version.outputs.value }}
