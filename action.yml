@@ -10,33 +10,43 @@ inputs:
 outputs:
   version:
     description: SDK Version Installed
-    value: ${{ runs.env.vk_ver }}
+    value: ${{ steps.version.outputs.value }}
   path:
     description: Path to the Vulkan SDK
-    value: ${{ runs.env.vk_sdk_dir }}
+    value: ${{ steps.path.outputs.value }}
 
 runs:
   using: composite
-  env:
-    vk_ver: ${{ inputs.version }}
-    vk_sdk_dir: ${{ github.workspace }}/vulkan_sdk/
   steps:
-    - name: Resolve Version
+    - name: SDK Path
+      id: path
+      run: echo "::set-output name=value::vulkan_sdk"
+      shell: bash
+
+    - name: Resolve Latest Version
       id: resolve
-      if: ${{ env.vk_ver }} == "latest"
+      if: ${{ inputs.version }} == "latest"
       run: resolve.sh
+      shell: bash
+
+    - name: Version
+      id: version
+      run: |
+        echo "::set-output name=value::${{ steps.resolve.outputs.version || inputs.version }}"
       shell: bash
 
     - name: Hit Cache
       id: hit
       uses: actions/cache@v3
       with:
-        path: ${{ env.vk_sdk_dir }}
-        key: ${{ runner.os }}-${{ env.vk_ver }}
+        path: ${{ steps.path.outputs.value }}
+        key: ${{ runner.os }}-${{ steps.version.outputs.value }}
 
     - name: Download SDK
       if: steps.hit.outputs.cache-hit != 'true'
       run: download.sh
+      env:
+        vk_ver: ${{ steps.version.outputs.value }}
       shell: bash
 
     - name: Install SDK
@@ -53,5 +63,5 @@ runs:
       if: steps.hit.outputs.cache-hit != 'true'
       uses: actions/cache@v3
       with:
-        path: ${{ env.vk_sdk_dir }}
+        path: ${{ steps.path.outputs.value }}
         key: ${{ runner.os }}-${{ env.vk_ver }}
